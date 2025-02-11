@@ -1,0 +1,3 @@
+displayName = 最终铜短剑
+author = Ppayru
+version = 0.1
