@@ -13,4 +13,7 @@ Content: {
 	}
 }
 
-Projectiles.SwingProj.DisplayName: Swing Proj
+Projectiles: {
+	SwingProj.DisplayName: Swing Proj
+	UCSProj1.DisplayName: U C S Proj1
+}

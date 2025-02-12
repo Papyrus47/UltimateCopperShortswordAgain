@@ -131,7 +131,7 @@ namespace UltimateCopperShortsword.Content.Projs.Bosses.UltimateCopperShortsword
             {
                 if(copperShortsword.CurrentMode is TwoLevel)
                 {
-                    lightColor = Color.Lerp(Color.Green, lightColor, 0.5f);
+                   lightColor = Color.Lerp(Color.Green, lightColor, 0.4f);
                 }
                 else if(copperShortsword.CurrentMode is ThreeLevel)
                 {

@@ -108,29 +108,33 @@ namespace UltimateCopperShortsword.Content.NPCs
 
             Dash dash1_phase1 = new(NPC)
             {
-                dashSpeed = 10f,
-                dashTime = 60,
+                dashSpeed = 20f,
+                dashTime = 30,
             };
             Dash dash2_phase1 = new(NPC)
             {
-                dashSpeed = 10f,
-                dashTime = 60,
+                dashSpeed = 20f,
+                dashTime = 40,
             };
 
             Swing swing1_phase1 = new(NPC, Vector2.UnitY, MathHelper.Pi, 1f, 2f, 15)
             {
-                rand = 30
+                rand = 20
             };
-            Swing swing2_phase1 = new(NPC, -Vector2.UnitY, -MathHelper.Pi, 0.5f, 2f, 20)
+            Swing swing2_phase1 = new(NPC, -Vector2.UnitY, -MathHelper.Pi, 0.5f, 2.3f, 20)
             {
                 rand = 75
             };
+            MoveHeadAndShoot moveHeadAndShoot = new(NPC);
             SkillNPC.Register(start, Move_One, dash1_phase1, dash2_phase1,swing1_phase1,swing2_phase1);
             #region 链接技能
             start.AddSkill(Move_One);
 
-            Move_One.AddSkill(swing1_phase1).AddSkill(swing2_phase1);
-            Move_One.AddSkill(dash1_phase1).AddSkill(dash2_phase1);
+            moveHeadAndShoot.AddSkill(swing1_phase1);
+            Move_One.AddSkill(moveHeadAndShoot).AddSkill(dash1_phase1);
+            dash1_phase1.AddSkill(swing1_phase1);
+            Move_One.AddSkill(swing1_phase1).AddSkill(swing2_phase1).AddSkill(dash1_phase1);
+            Move_One.AddSkill(dash1_phase1).AddSkill(dash2_phase1).AddSkill(swing2_phase1);
             #endregion
 
             CurrentSkill = start;

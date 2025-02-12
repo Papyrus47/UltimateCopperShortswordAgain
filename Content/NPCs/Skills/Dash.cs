@@ -34,28 +34,30 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
             }
             else if((int)NPC.ai[0] < dashTime * 0.2f)
             {
-                Vector2 pos = Target.Center + (Target.Center - NPC.Center).RotatedBy(0.1f).SafeNormalize(default) * 100;
-                NPC.velocity = (pos - NPC.Center).SafeNormalize(default) * 9;
+                Vector2 pos = Target.Center + (NPC.Center - Target.Center).RotatedBy(0.01f).SafeNormalize(default) * 200;
+                NPC.velocity = (NPC.velocity * 20 + (pos - NPC.Center).SafeNormalize(default) * 16f) / 21f;
             }
             NPC.rotation = NPC.velocity.ToRotation() + MathHelper.PiOver4;
-            if (NPC.ai[0] > dashTime * 1.2f)
+            if (NPC.ai[0] > dashTime * 1.1f)
             {
                 SkillTimeOut = true;
                 SyncNPC();
             }
             else if (NPC.ai[0] > dashTime * 0.8f)
             {
-                NPC.velocity = (NPC.velocity * 20 + (Target.Center - NPC.Center).SafeNormalize(default) * dashSpeed) / 21f;
+                NPC.velocity = (NPC.velocity * 20 + (NPC.Center - Target.Center).SafeNormalize(default) * dashSpeed * 0.5f) / 21f;
                 SyncNPC();
             }
         }
         public override bool ActivationCondition(NPCSkills activeSkill)
         {
+            if(NPC.Distance(Target.position) > 600)
+                return false;
             if(activeSkill is Dash)
             {
                 return true;
             }
-            return Main.rand.NextBool(2, 5);
+            return Main.rand.Next(10) < 2;
         }
 
         public override bool SwitchCondition(NPCSkills changeToSkill)

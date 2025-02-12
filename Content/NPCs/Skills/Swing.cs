@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Terraria;
 using Terraria.Audio;
 using UltimateCopperShortsword.Content.Projs.Bosses.UltimateCopperShortswordProj;
 using UltimateCopperShortsword.Core.SkillsNPC;
@@ -47,12 +48,14 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
             else
             {
                 float dis = NPC.Distance(Target.position);
-                if(dis > 50)
+                if (dis > 200)
                     NPC.velocity = (Target.Center - NPC.Center).SafeNormalize(default) * 10;
+                else
+                    NPC.velocity *= 0.8f;
                 NPC.rotation = NPC.velocity.ToRotation() + MathHelper.PiOver4;
                 if((int)NPC.ai[0] == 2)
                 {
-                    SoundEngine.PlaySound(SoundID.Item4 with { Pitch = 0.5f }, NPC.position);
+                    SoundEngine.PlaySound(SoundID.Item4 with { Pitch = -0.5f }, NPC.position);
                     for (float i = 0; i <= 6.28f; i += 0.1f)
                     {
                         Dust.NewDustPerfect(NPC.Center, DustID.Copper, Vector2.One.RotatedBy(i) * 5).noGravity = true;
@@ -67,7 +70,15 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
             }
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) => NPC.ai[0] < 30;
-        public override bool ActivationCondition(NPCSkills activeSkill) => Main.rand.Next(100) < rand;
+        public override bool ActivationCondition(NPCSkills activeSkill)
+        {
+            if (NPC.Distance(Target.position) > 400)
+                return false;
+            if (activeSkill is Swing)
+                return true;
+            return Main.rand.Next((int)MathF.Pow((Target.Center - NPC.Center).Length(),0.5f) + 1) < rand;
+        }
+
         public override bool SwitchCondition(NPCSkills changeToSkill)
         {
             if ((int)NPC.ai[0] > 30)

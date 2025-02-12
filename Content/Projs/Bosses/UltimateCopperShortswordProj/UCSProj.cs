@@ -21,12 +21,19 @@ namespace UltimateCopperShortsword.Content.Projs.Bosses.UltimateCopperShortsword
             Projectile.tileCollide = false;
             Projectile.width = 32;
             Projectile.height = 32;
-            Projectile.extraUpdates = 4;
             Projectile.aiStyle = -1;
         }
         public override void AI()
         {
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
+        }
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
+        {
+            modifiers.ScalingArmorPenetration += 1f;
+            if (Main.expertMode)
+                modifiers.SourceDamage /= 2;
+            if (Main.masterMode)
+                modifiers.SourceDamage /= 3;
         }
         public override bool PreDraw(ref Color lightColor)
         {
