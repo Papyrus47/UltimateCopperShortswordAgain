@@ -1,2 +1,16 @@
-# This file will automatically update with entries for new content after a build and reload.
+NPCs.CopperShortsword.DisplayName: Copper Shortsword
 
+Content: {
+	NPCs: {
+		Skills: {
+			StartText: {
+				Text1: 你,又一次抛弃了我
+				Text2: 你只是拿我合成天顶剑,我便一无是处了
+				Text3: 我要让你见识真正的力量
+				Text4: 我是最强的武器！
+			}
+		}
+	}
+}
+
+Projectiles.SwingProj.DisplayName: Swing Proj
