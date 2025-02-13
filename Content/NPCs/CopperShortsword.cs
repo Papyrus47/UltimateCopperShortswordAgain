@@ -1,4 +1,6 @@
-﻿using UltimateCopperShortsword.Content.NPCs.Modes;
+﻿using Terraria;
+using Terraria.DataStructures;
+using UltimateCopperShortsword.Content.NPCs.Modes;
 using UltimateCopperShortsword.Content.NPCs.Skills;
 using UltimateCopperShortsword.Core.SkillsNPC;
 
@@ -60,6 +62,14 @@ namespace UltimateCopperShortsword.Content.NPCs
             NPC.noTileCollide = true;
             NPC.noGravity = true;
             Music = Music1;
+        }
+        public override void OnSpawn(IEntitySource source)
+        {
+            base.OnSpawn(source);
+            //if(Main.netMode != NetmodeID.Server)
+            //{
+            //    NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, number: TargetPlayer.whoAmI, number2: Type); // 同步生成
+            //}
         }
         public override void AI()
         {

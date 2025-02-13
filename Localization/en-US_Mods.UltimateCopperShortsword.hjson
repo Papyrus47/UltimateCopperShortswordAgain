@@ -24,3 +24,10 @@ Projectiles: {
 	UCSProj1.DisplayName: U C S Proj1
 	StabProj.DisplayName: Stab Proj
 }
+
+Items: {
+	SummonUCS: {
+		DisplayName: Summon U C S
+		Tooltip: ""
+	}
+}
