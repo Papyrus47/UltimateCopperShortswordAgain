@@ -37,6 +37,7 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
                 projectile.localAI[0] = StartVel.ToRotation();
                 projectile.localAI[1] = ScaleY;
                 projectile.scale = ScaleAll;
+                projectile.netUpdate = true;
             }
             else if ((int)NPC.ai[0] > 30)
             {
@@ -45,20 +46,20 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
             }
             else 
             {
-                if(copperShortsword.DamagePool <= copperShortsword.DamagePoolMax * -0.2f)
+                if (copperShortsword.DamagePool <= copperShortsword.DamagePool * -0.1f)
                 {
                     SkillTimeOut = true;
                     return;
                 }
                 float dis = NPC.Distance(Target.position);
                 if (dis > 200)
-                    NPC.velocity = (Target.Center - NPC.Center).SafeNormalize(default) * 10;
+                    NPC.velocity = (Target.Center - NPC.Center) * 0.1f;
                 else
                     NPC.velocity *= 0.8f;
                 NPC.rotation = NPC.velocity.ToRotation() + MathHelper.PiOver4;
                 if((int)NPC.ai[0] == 2)
                 {
-                    SoundEngine.PlaySound(SoundID.Item122 with { Pitch = -0.5f }, NPC.position);
+                    SoundEngine.PlaySound(SoundID.Item28 with { Pitch = -0.5f }, NPC.position);
                     Color color = Color.OrangeRed;
                     if (copperShortsword.CurrentMode is ThreeLevel)
                         color = Color.Green;
@@ -84,11 +85,14 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
 
         public override bool ActivationCondition(NPCSkills activeSkill)
         {
-            if (NPC.Distance(Target.position) > 400)
+            float dis = NPC.Distance(Target.position);
+            if (dis > 700) // 太远
+                return true;
+            if (dis > 400)
                 return false;
             if (activeSkill is Swing)
                 return true;
-            return Main.rand.Next((int)MathF.Pow((Target.Center - NPC.Center).Length(),0.5f) + 1) < rand;
+            return Main.rand.Next((int)MathF.Pow(dis,0.5f) + 1) < rand;
         }
 
         public override bool SwitchCondition(NPCSkills changeToSkill)

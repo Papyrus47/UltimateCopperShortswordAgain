@@ -1,4 +1,6 @@
-﻿namespace UltimateCopperShortsword.Core.SkillsNPC
+﻿using System.IO;
+
+namespace UltimateCopperShortsword.Core.SkillsNPC
 {
     public interface IBasicSkillNPC
     {
@@ -46,6 +48,8 @@
         /// </summary>
         public void TryChangeSkill()
         {
+            if (CurrentSkill == null)
+                return;
             if (CurrentSkill.SkillTimeOut) // 技能强制回滚
             {
                 OnSkillTimeOut();
@@ -69,6 +73,8 @@
         /// </summary>
         public void TryChangeMode()
         {
+            SaveModes ??= [];
+            SaveModesID ??= [];
             foreach (var targetMode in SaveModesID.Keys)
             {
                 if (targetMode.ActivationCondition(CurrentMode) && CurrentMode.SwitchCondition(targetMode))
@@ -81,6 +87,16 @@
         }
         #endregion
         #region 注册与维护
+        public void SendData(BinaryWriter writer)
+        {
+            writer.Write(CurrentModesID);
+            writer.Write(CurrentSkillID);
+        }
+        public void ReadData(BinaryReader reader)
+        {
+            CurrentModesID = reader.ReadInt32();
+            CurrentSkillID = reader.ReadInt32();
+        }
         /// <summary>
         /// 当前技能的ID
         /// </summary>
@@ -110,6 +126,8 @@
         /// <exception cref="Exception">是否注册过这个状态ID</exception>
         public void Register(NPCModes mode)
         {
+            SaveModes ??= [];
+            SaveModesID ??= [];
             if (!SaveModes.ContainsValue(mode)) // 不存在这个状态
             {
                 int i = 0;
@@ -143,6 +161,8 @@
         /// <exception cref="Exception">是否注册过这个技能ID</exception>
         public void Register(NPCSkills skill)
         {
+            SaveSkills ??= [];
+            SaveSkillsID ??= [];
             if (!SaveSkills.ContainsValue(skill)) // 不存在这个技能
             {
                 int i = 0;

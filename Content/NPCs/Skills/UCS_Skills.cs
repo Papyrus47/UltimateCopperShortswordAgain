@@ -29,8 +29,9 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
         }
         public void SyncNPC()
         {
-            if(Target != null && Target.whoAmI == Main.myPlayer)
+            if (Target != null && Main.netMode != NetmodeID.MultiplayerClient)
                 NPC.netUpdate = true;
+                //NetMessage.SendData(MessageID.SyncNPC, number: NPC.whoAmI);
         }
         public void Shoot(Vector2 center = default,Vector2 vel = default, float speed = 10f)
         {
@@ -43,8 +44,8 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
                 vel = NPC.velocity.SafeNormalize(Vector2.UnitY);
             int shootType = ModContent.ProjectileType<UCSProj1>();
             if (copperShortsword.CurrentMode is not OneLevel)
-                shootType = ModContent.ProjectileType<UCSProj1>();
-            Projectile.NewProjectile(NPC.GetSource_FromAI(), center, vel * speed, shootType, NPC.damage, 0f, Target.whoAmI);
+                shootType = ModContent.ProjectileType<UCSProj2>();
+            Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), center, vel * speed, shootType, NPC.damage, 0f, Target.whoAmI).netUpdate = true;
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {

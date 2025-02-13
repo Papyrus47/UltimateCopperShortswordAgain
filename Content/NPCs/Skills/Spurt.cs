@@ -33,7 +33,7 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
                 }
                 if ((int)NPC.ai[0] == 1)
                 {
-                    SoundEngine.PlaySound(SoundID.Item122 with { Pitch = 1f }, NPC.position);
+                    SoundEngine.PlaySound(SoundID.Item28 with { Pitch = 1f }, NPC.position);
                 }
                 if (copperShortsword.OldSkills.Count > 0 && copperShortsword.OldSkills.ToArray()[^1] is Spurt && NPC.ai[0] < 40)
                 {
@@ -46,9 +46,9 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
             else if (NPC.ai[0] < 80)
             {
                 SyncNPC();
-                NPC.velocity = (pos - NPC.Center) * 0.05f;
+                NPC.velocity = (pos - NPC.Center) * 0.1f;
                 NPC.rotation = NPC.velocity.ToRotation() + MathHelper.PiOver4;
-                if ((int)NPC.ai[0] == 61)
+                if ((int)NPC.ai[0] == 61 && Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     Color color = Color.OrangeRed;
                     if (copperShortsword.CurrentMode is ThreeLevel)
@@ -68,7 +68,6 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
         }
         public override bool ActivationCondition(NPCSkills activeSkill)
         {
-
             Vector2 vel = NPC.Center - Target.Center;
             float dis = vel.Length();
             if (activeSkill is not Spurt)

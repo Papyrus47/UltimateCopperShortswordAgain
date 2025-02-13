@@ -25,7 +25,7 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
                     dis = 450;
                 Vector2 vector2 = Target.Center - (Target.Center - NPC.Center).SafeNormalize(default) * dis - NPC.Center;
                 if (vector2.Length() > 100f)
-                    NPC.velocity = (NPC.velocity * 3f + vector2.SafeNormalize(default) * 30f) / 4f;
+                    NPC.velocity = vector2 * 0.3f;
                 else
                     NPC.velocity = (NPC.velocity * 3f + toTarget.SafeNormalize(default) * 10f) / 4f;
             }

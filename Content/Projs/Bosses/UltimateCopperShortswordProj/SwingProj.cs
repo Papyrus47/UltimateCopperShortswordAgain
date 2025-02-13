@@ -37,14 +37,14 @@ namespace UltimateCopperShortsword.Content.Projs.Bosses.UltimateCopperShortsword
         }
         public override void SendExtraAI(BinaryWriter writer)
         {
-            swingHelper.SendData(writer);
+            swingHelper?.SendData(writer);
             writer.Write(Projectile.localAI[0]);
             writer.Write(Projectile.localAI[1]);
             writer.Write(Projectile.localAI[2]);
         }
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            swingHelper.RendData(reader);
+            swingHelper?.RendData(reader);
             Projectile.localAI[0] = reader.ReadSingle();
             Projectile.localAI[1] = reader.ReadSingle();
             Projectile.localAI[2] = reader.ReadSingle();

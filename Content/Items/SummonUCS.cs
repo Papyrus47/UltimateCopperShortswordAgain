@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Terraria.Audio;
 using UltimateCopperShortsword.Content.NPCs;
+using Terraria.ID;
 
 namespace UltimateCopperShortsword.Content.Items
 {
@@ -46,9 +47,10 @@ namespace UltimateCopperShortsword.Content.Items
 
                 int type = ModContent.NPCType<CopperShortsword>();
 
-                if (Main.netMode != NetmodeID.MultiplayerClient)
+                if (Main.netMode != NetmodeID.MultiplayerClient) // 服务器或者玩家本地
                 {
-                    NPC.NewNPCDirect(player.GetSource_ItemUse(Item), player.position + new Vector2(0, -100), type);
+                    NPC npc = NPC.NewNPCDirect(player.GetSource_ItemUse(Item), player.position + new Vector2(0, -100), type);
+                    NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
                 }
                 else
                 {

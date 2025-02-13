@@ -1,9 +1,12 @@
-﻿using Terraria.DataStructures;
+﻿using System.IO;
+using Terraria.DataStructures;
 
 namespace UltimateCopperShortsword.Core.SkillsNPC
 {
     public abstract class BasicSkillNPC : ModNPC, IBasicSkillNPC
     {
+        public bool IsInit;
+
         public IBasicSkillNPC SkillNPC => this;
         public NPCSkills CurrentSkill
         {
@@ -68,19 +71,29 @@ namespace UltimateCopperShortsword.Core.SkillsNPC
         /// </summary>
         public Dictionary<int, NPCModes> SaveModes { get; set; }
         public Queue<NPCSkills> OldSkills { get; set; }
-
-        public override void OnSpawn(IEntitySource source)
-        {
-            Init();
-        }
         public override void AI()
         {
+            if (!IsInit)
+            {
+                IsInit = true;
+                Init();
+            }
             CurrentSkill?.AI();
             SkillNPC.TryChangeMode(); // 先切换模式
             SkillNPC.TryChangeSkill(); // 再切换技能
         }
         public abstract void Init();
         public abstract void OnSkillTimeOut();
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            base.SendExtraAI(writer);
+            SkillNPC.SendData(writer);
+        }
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            base.ReceiveExtraAI(reader);
+            SkillNPC.ReadData(reader);
+        }
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
             CurrentSkill?.ModifyHitPlayer(target, ref modifiers);

@@ -21,7 +21,7 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
         {
             if ((int)NPC.ai[0] == 0)
             {
-                SoundEngine.PlaySound(SoundID.Item122 with { Pitch = 0.5f}, NPC.position);
+                SoundEngine.PlaySound(SoundID.Item28 with { Pitch = 0.5f}, NPC.position);
                 Color color = Color.OrangeRed;
                 if (copperShortsword.CurrentMode is ThreeLevel)
                     color = Color.Green;
@@ -61,7 +61,7 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
             {
                 return true;
             }
-            return Main.rand.Next(10) < 2;
+            return Main.rand.Next(10) < 4;
         }
 
         public override bool SwitchCondition(NPCSkills changeToSkill)

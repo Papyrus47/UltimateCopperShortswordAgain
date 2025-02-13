@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using System.IO;
+using Terraria;
 using Terraria.DataStructures;
 using UltimateCopperShortsword.Content.NPCs.Modes;
 using UltimateCopperShortsword.Content.NPCs.Skills;
@@ -15,7 +16,16 @@ namespace UltimateCopperShortsword.Content.NPCs
             rotation = NPC.rotation;
         }
         public override string Texture => $"Terraria/Images/Item_{ItemID.CopperShortsword}";
-        public Player TargetPlayer => Main.player[NPC.FindClosestPlayer()];
+        public Player TargetPlayer
+        {
+            get
+            {
+                if (NPC.target < 0 || NPC.target == 255 || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
+                    NPC.TargetClosest();
+                return Main.player[NPC.target];
+            }
+        }
+
         public static int Music1;
         public static int Music2;
         public static int Music3;
@@ -26,7 +36,7 @@ namespace UltimateCopperShortsword.Content.NPCs
         /// <summary>
         /// 伤害池子上限
         /// </summary>
-        public int DamagePoolMax = 3000;
+        public int DamagePoolMax = 30000;
         /// <summary>
         /// 一阶段游走
         /// </summary>
@@ -45,6 +55,7 @@ namespace UltimateCopperShortsword.Content.NPCs
             Music1 = MusicLoader.GetMusicSlot("UltimateCopperShortsword/Assets/Sounds/Music/Phase1");
             Music2 = MusicLoader.GetMusicSlot("UltimateCopperShortsword/Assets/Sounds/Music/Phase2");
             Music3 = MusicLoader.GetMusicSlot("UltimateCopperShortsword/Assets/Sounds/Music/Phase3");
+            NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
         public override void SetDefaults()
         {
@@ -54,7 +65,7 @@ namespace UltimateCopperShortsword.Content.NPCs
             NPC.damage = 9;
             NPC.defense = 16;
             NPC.lifeMax = 66000;
-            NPC.HitSound = SoundID.NPCHit1;
+            NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.value = 100000;
             NPC.knockBackResist = 0f;
@@ -66,15 +77,41 @@ namespace UltimateCopperShortsword.Content.NPCs
         public override void OnSpawn(IEntitySource source)
         {
             base.OnSpawn(source);
-            //if(Main.netMode != NetmodeID.Server)
-            //{
-            //    NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, number: TargetPlayer.whoAmI, number2: Type); // 同步生成
-            //}
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                NetMessage.SendData(MessageID.SyncNPC,-1,-1,null,NPC.whoAmI); // 同步生成
+            }
+        }
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            base.SendExtraAI(writer);
+            writer.Write(DamagePool);
+            //writer.Write(NPC.rotation);
+        }
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            base.ReceiveExtraAI(reader);
+            DamagePool = reader.ReadInt32();
+            //NPC.rotation = reader.ReadSingle();
         }
         public override void AI()
         {
+            //if (Main.netMode == NetmodeID.MultiplayerClient)
+            //    return;
+            _ = TargetPlayer;
+            if (TargetPlayer.dead)
+            {
+                NPC.active = false;
+                return;
+            }
             base.AI();
-            if(NPC.life <= (int)(NPC.lifeMax * 0.2f)) // 清除
+            if (Main.netMode == NetmodeID.Server)
+            {
+                // 因为服务器是控制台，所以要把信息写进控制台里
+                Console.WriteLine(CurrentSkill.GetType().Name);
+            }
+            //NPC.life = (int)(NPC.lifeMax * 0.45f);
+            if (NPC.life <= (int)(NPC.lifeMax * 0.2f)) // 清除
             {
                 NPC.life = 0;
                 NPC.checkDead();
@@ -91,7 +128,10 @@ namespace UltimateCopperShortsword.Content.NPCs
             }
             if(DamagePool < DamagePoolMax)
                 DamagePool += 20;
+            if (DamagePool < 0)
+                DamagePool += -DamagePool / 3;
         }
+        public override bool CheckActive() => false;
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
             base.ModifyHitPlayer(target, ref modifiers);
@@ -101,7 +141,7 @@ namespace UltimateCopperShortsword.Content.NPCs
         {
             base.ModifyIncomingHit(ref modifiers);
             if (DamagePool <= 100)
-                modifiers.FinalDamage *= 0.1f;
+                modifiers.FinalDamage *= 0.9f;
             modifiers.ModifyHitInfo += ModifyHitInfo;
         }
         public void ModifyHitInfo(ref NPC.HitInfo info)
@@ -186,14 +226,26 @@ namespace UltimateCopperShortsword.Content.NPCs
 
             MoveHeadAndShoot moveHeadAndShoot_phase3 = new(NPC);
             RoungTargetAndShoot roungTargetAndShoot_phase3 = new(NPC);
+            MoveSwingShoot moveSwingShoot1_phase3 = new(NPC, Vector2.UnitY, MathHelper.Pi, 0.3f, 2.5f, 10)
+            {
+                rand = 50 // 一半几率触发
+            };
+            MoveSwingShoot moveSwingShoot2_phase3 = new(NPC, -Vector2.UnitY, -MathHelper.Pi, 0.3f, 2.5f, 10)
+            {
+                rand = 50 // 一半几率触发
+            };
             #endregion
-            SkillNPC.Register(Move_Three, swing1_phase3, swing2_phase3, swing3_phase3, swing4_phase3, chargedSlash, spurt1_phase3, spurt2_phase3, spurt3_phase3, moveHeadAndShoot_phase3);
+            SkillNPC.Register(Move_Three, swing1_phase3, swing2_phase3, swing3_phase3, swing4_phase3, chargedSlash, spurt1_phase3, spurt2_phase3, spurt3_phase3, moveHeadAndShoot_phase3, moveSwingShoot1_phase3);
 
-            roungTargetAndShoot_phase3.AddBySkilles(swing1_phase3, swing2_phase3, swing3_phase3, swing4_phase3, chargedSlash,spurt2_phase3,spurt3_phase3);
-            Move_Three.AddSkilles(moveHeadAndShoot_phase3, roungTargetAndShoot_phase3);
-            Move_Three.AddSkill(swing1_phase3).AddSkill(swing2_phase3).AddSkill(swing3_phase3).AddSkill(swing4_phase3).AddSkill(chargedSlash);
             spurt1_phase3.AddBySkilles(swing1_phase3, swing2_phase3, swing3_phase3, swing4_phase3, chargedSlash);
             Move_Three.AddSkill(spurt1_phase3).AddSkill(spurt2_phase3).AddSkill(spurt3_phase3);
+            Move_Three.AddSkill(swing1_phase3).AddSkill(swing2_phase3).AddSkill(swing3_phase3).AddSkill(swing4_phase3).AddSkill(chargedSlash);
+            moveSwingShoot1_phase3.AddBySkilles(swing1_phase3, swing2_phase3, swing3_phase3, swing4_phase3, chargedSlash, spurt1_phase3, spurt2_phase3, spurt3_phase3, moveHeadAndShoot_phase3);
+            moveSwingShoot1_phase3.AddSkill(moveSwingShoot2_phase3);
+
+            swing1_phase3.AddBySkilles(spurt1_phase3, spurt2_phase3, spurt3_phase3);
+            roungTargetAndShoot_phase3.AddBySkilles(spurt2_phase3,spurt3_phase3);
+            Move_Three.AddSkilles(moveHeadAndShoot_phase3, roungTargetAndShoot_phase3);
             #endregion
             #region 二阶段技能
             #region 创建
@@ -228,6 +280,10 @@ namespace UltimateCopperShortsword.Content.NPCs
             {
                 rand = 30
             };
+            MoveSwingShoot moveSwingShoot_phase2 = new(NPC, Vector2.UnitY, MathHelper.Pi, 0.3f, 2.5f, 20)
+            {
+                rand = 50 // 一半几率触发
+            };
             Spurt spurt_phase2 = new(NPC, () => TargetPlayer.Center + (TargetPlayer.Center - NPC.Center).SafeNormalize(default) * 1000);
             RoungTargetAndShoot roungTargetAndShoot_phase2 = new(NPC);
             SkillNPC.Register(Move_Two, dash1_phase2, dash2_phase2, swing1_phase2, swing2_phase2, swing3_phase2, swing4_phase2, dash3_phase2, spurt_phase2, roungTargetAndShoot_phase2);
@@ -235,6 +291,7 @@ namespace UltimateCopperShortsword.Content.NPCs
             #region 远程
             roungTargetAndShoot_phase2.AddBySkilles(swing1_phase2);
             Move_Two.AddSkill(roungTargetAndShoot_phase2);
+            moveSwingShoot_phase2.AddBySkilles(swing3_phase2, dash3_phase2, spurt_phase2, roungTargetAndShoot_phase2);
             #endregion
             #region 近战
 
@@ -267,9 +324,13 @@ namespace UltimateCopperShortsword.Content.NPCs
             {
                 rand = 75
             };
+            MoveSwingShoot moveSwingShoot_phase1 = new(NPC, Vector2.UnitY, MathHelper.Pi, 0.3f, 2.5f, 20)
+            {
+                rand = 50 // 一半几率触发
+            };
             MoveHeadAndShoot moveHeadAndShoot = new(NPC);
             RoungTargetAndShoot roungTargetAndShoot = new(NPC);
-            SkillNPC.Register(start, Move_One, dash1_phase1, dash2_phase1,swing1_phase1,swing2_phase1);
+            SkillNPC.Register(start, Move_One, dash1_phase1, dash2_phase1,swing1_phase1,swing2_phase1,moveSwingShoot_phase1);
             #region 链接技能
             start.AddSkill(Move_One);
 
@@ -281,8 +342,8 @@ namespace UltimateCopperShortsword.Content.NPCs
             Move_One.AddSkill(moveHeadAndShoot).AddSkill(dash1_phase1);
             dash2_phase1.AddSkill(moveHeadAndShoot);
             swing2_phase1.AddSkill(moveHeadAndShoot);
+            Move_One.AddSkill(moveSwingShoot_phase1);
             #endregion
-
             #region 近战攻击判定
             dash1_phase1.AddSkill(swing1_phase1);
             Move_One.AddSkill(swing1_phase1).AddSkill(swing2_phase1).AddSkill(dash1_phase1);

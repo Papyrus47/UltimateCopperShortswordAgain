@@ -25,8 +25,11 @@ namespace UltimateCopperShortsword.Content.Projs.Bosses.UltimateCopperShortsword
         }
         public override void AI()
         {
+            Projectile.ai[0]++;
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
+            Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * MathF.Pow(Projectile.velocity.Length() + Projectile.ai[0] * 5, 0.5f);
         }
+        public override bool ShouldUpdatePosition() => Projectile.ai[0] >= 30;
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
             modifiers.ScalingArmorPenetration += 1f;
@@ -48,10 +51,25 @@ namespace UltimateCopperShortsword.Content.Projs.Bosses.UltimateCopperShortsword
             }
             sb.Draw(texture, drawPos, null, Color.White, Projectile.rotation, texture.Size() / 2, Projectile.scale,
                     SpriteEffects.None, 0);
+
+            #region 预警线
+            if (Projectile.ai[0] < 30)
+            {
+                Color color = Color.OrangeRed;
+                if (this is UCSProj2)
+                    color = Color.LightGreen;
+                Color drawColor = color * MathHelper.SmoothStep(0, 1f, Projectile.ai[0] / 30f - 0.5f);
+                Utils.DrawLine(sb, Projectile.Center, Projectile.Center + Projectile.velocity.SafeNormalize(default) * 10000, drawColor, drawColor, 4);
+            }
+            #endregion
             return false;
         }
     }
     public class UCSProj1 : UCSProj
+    {
+
+    }
+    public class UCSProj2 : UCSProj
     {
 
     }

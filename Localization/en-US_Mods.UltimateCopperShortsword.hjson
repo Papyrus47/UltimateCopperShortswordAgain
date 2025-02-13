@@ -23,6 +23,7 @@ Projectiles: {
 	SwingProj.DisplayName: Swing Proj
 	UCSProj1.DisplayName: U C S Proj1
 	StabProj.DisplayName: Stab Proj
+	UCSProj2.DisplayName: U C S Proj2
 }
 
 Items: {

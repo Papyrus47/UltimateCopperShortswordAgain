@@ -17,7 +17,7 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
         public override void AI()
         {
             NPC.ai[0]++;
-            if ((int)NPC.ai[0] == 30) // 生成弹幕
+            if ((int)NPC.ai[0] == 30 && Main.netMode != NetmodeID.MultiplayerClient) // 生成弹幕
             {
                 NPC.ai[3] = Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.UnitX, ModContent.ProjectileType<SwingProj>(), NPC.damage, 0f, Target.whoAmI, 0, maxTime * 0.8f, Rot);
                 Projectile projectile = Main.projectile[(int)NPC.ai[3]];
