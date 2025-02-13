@@ -18,7 +18,7 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
             NPC.rotation = NPC.velocity.ToRotation() + MathHelper.PiOver4;
             float dis = NPC.Distance(Target.position);
             if (dis > 330)
-                NPC.velocity = (NPC.velocity * 10 + (Target.Center - NPC.Center).SafeNormalize(default) * speed) / 11f;
+                NPC.velocity = (NPC.velocity * 10 + (Target.Center - NPC.Center).SafeNormalize(default) * (speed + NPC.ai[0] * 0.05f)) / 11f;
             else if (dis < 100)
                 NPC.velocity = (NPC.velocity * 10 + (NPC.Center - Target.Center).SafeNormalize(default) * speed) / 11f;
             else

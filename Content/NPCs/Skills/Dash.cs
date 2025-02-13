@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria.Audio;
+using UltimateCopperShortsword.Content.NPCs.Modes;
 using UltimateCopperShortsword.Core.SkillsNPC;
 
 namespace UltimateCopperShortsword.Content.NPCs.Skills
@@ -20,10 +21,13 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
         {
             if ((int)NPC.ai[0] == 0)
             {
-                SoundEngine.PlaySound(SoundID.Item4 with { Pitch = 0.5f}, NPC.position);
+                SoundEngine.PlaySound(SoundID.Item122 with { Pitch = 0.5f}, NPC.position);
+                Color color = Color.OrangeRed;
+                if (copperShortsword.CurrentMode is ThreeLevel)
+                    color = Color.Green;
                 for (float i = 0; i <= 6.28f; i += 0.1f)
                 {
-                    Dust.NewDustPerfect(NPC.Center, DustID.Copper, Vector2.One.RotatedBy(i) * 5).noGravity = true;
+                    Dust.NewDustPerfect(NPC.Center, DustID.FireworksRGB, Vector2.One.RotatedBy(i) * 5,0, color).noGravity = true;
                 }
                 SyncNPC();
             }

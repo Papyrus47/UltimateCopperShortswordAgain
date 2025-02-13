@@ -49,9 +49,12 @@
         /// </summary>
         /// <param name="skills">目标技能</param>
         /// <returns>被添加者</returns>
-        public NPCSkills AddBySkill(NPCSkills targetSkills)
+        public NPCSkills AddBySkilles(params NPCSkills[] targetSkills)
         {
-            targetSkills.AddSkill(this);
+            foreach (var targetSkill in targetSkills)
+            {
+                targetSkill.AddSkill(this);
+            }
             return this;
         }
         #endregion
@@ -65,6 +68,8 @@
         public virtual void FindFrame(int frameHeight) { }
         public virtual void ModifyHitByItem(Player player, Item item, ref NPC.HitModifiers modifiers) { }
         public virtual void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers) { }
+        public virtual void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone) { }
+        public virtual void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone) { }
         /// <summary>
         /// 激活这个技能的条件
         /// </summary>

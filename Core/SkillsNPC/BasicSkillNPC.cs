@@ -80,6 +80,7 @@ namespace UltimateCopperShortsword.Core.SkillsNPC
             SkillNPC.TryChangeSkill(); // 再切换技能
         }
         public abstract void Init();
+        public abstract void OnSkillTimeOut();
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
             CurrentSkill?.ModifyHitPlayer(target, ref modifiers);
@@ -101,7 +102,13 @@ namespace UltimateCopperShortsword.Core.SkillsNPC
             CurrentSkill?.FindFrame(frameHeight);
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) => CurrentSkill?.PreDraw(spriteBatch, screenPos, drawColor) != false;
-
-        public abstract void OnSkillTimeOut();
+        public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
+        {
+            CurrentSkill?.OnHitByItem(player, item, hit, damageDone);
+        }
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
+        {
+            CurrentSkill?.OnHitByProjectile(projectile, hit, damageDone);
+        }
     }
 }

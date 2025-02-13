@@ -34,6 +34,9 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
         }
         public void Shoot(Vector2 center = default,Vector2 vel = default, float speed = 10f)
         {
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+                return;
+
             if(center == default)
                 center = NPC.Center;
             if(vel == default)

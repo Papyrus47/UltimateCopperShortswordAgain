@@ -2,6 +2,12 @@ NPCs.CopperShortsword.DisplayName: Copper Shortsword
 
 Content: {
 	NPCs: {
+		Modes.ThreeLevel.SayText:
+			'''
+			我应该减少挥舞,反而转而我最原始的突刺！
+			你将见识到真正的地狱！
+			'''
+
 		Skills: {
 			StartText: {
 				Text1: 你,又一次抛弃了我
@@ -16,4 +22,5 @@ Content: {
 Projectiles: {
 	SwingProj.DisplayName: Swing Proj
 	UCSProj1.DisplayName: U C S Proj1
+	StabProj.DisplayName: Stab Proj
 }

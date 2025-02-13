@@ -73,8 +73,8 @@
             {
                 if (targetMode.ActivationCondition(CurrentMode) && CurrentMode.SwitchCondition(targetMode))
                 {
-                    CurrentMode.OnEnterMode();
-                    targetMode.OnExitMode();
+                    CurrentMode.OnExitMode();
+                    targetMode.OnEnterMode();
                     CurrentMode = targetMode;
                 }
             }
