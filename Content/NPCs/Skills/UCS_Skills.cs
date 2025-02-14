@@ -54,6 +54,10 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
                 tex = CopperShortsword2.Value;
             else if(copperShortsword.CurrentMode is ThreeLevel)
                 tex = CopperShortsword3.Value;
+            spriteBatch.Draw(tex, NPC.Center - screenPos, null, Color.White with { A = 0 }, NPC.rotation, new Vector2(tex.Width * 0.41f, tex.Height * 0.41f), NPC.scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(tex, NPC.Center - screenPos, null, Color.White with { A = 0 }, NPC.rotation, new Vector2(tex.Width * 0.59f, tex.Height * 0.59f), NPC.scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(tex, NPC.Center - screenPos, null, Color.White with { A = 0 }, NPC.rotation, new Vector2(tex.Width * 0.41f, tex.Height * 0.59f), NPC.scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(tex, NPC.Center - screenPos, null, Color.White with { A = 0 }, NPC.rotation, new Vector2(tex.Width * 0.59f, tex.Height * 0.41f), NPC.scale, SpriteEffects.None, 0f);
             spriteBatch.Draw(tex, NPC.Center - screenPos, null, drawColor, NPC.rotation, tex.Size() * 0.5f, NPC.scale, SpriteEffects.None, 0f);
             return false;
         }

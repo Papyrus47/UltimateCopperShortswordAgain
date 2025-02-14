@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.Graphics.Effects;
+using UltimateCopperShortsword.Assets.Skys;
 using UltimateCopperShortsword.Content.NPCs.Modes;
 using UltimateCopperShortsword.Content.NPCs.Skills;
 using UltimateCopperShortsword.Core.SkillsNPC;
@@ -73,6 +75,7 @@ namespace UltimateCopperShortsword.Content.NPCs
             NPC.noTileCollide = true;
             NPC.noGravity = true;
             Music = Music1;
+            SceneEffectPriority = SceneEffectPriority.BossHigh; // 音乐优先级
         }
         public override void OnSpawn(IEntitySource source)
         {
@@ -105,11 +108,11 @@ namespace UltimateCopperShortsword.Content.NPCs
                 return;
             }
             base.AI();
-            if (Main.netMode == NetmodeID.Server)
-            {
-                // 因为服务器是控制台，所以要把信息写进控制台里
-                Console.WriteLine(CurrentSkill.GetType().Name);
-            }
+            //if (Main.netMode == NetmodeID.Server)
+            //{
+            //    // 因为服务器是控制台，所以要把信息写进控制台里
+            //    Console.WriteLine(CurrentSkill.GetType().Name);
+            //}
             //NPC.life = (int)(NPC.lifeMax * 0.45f);
             if (NPC.life <= (int)(NPC.lifeMax * 0.2f)) // 清除
             {
@@ -118,18 +121,28 @@ namespace UltimateCopperShortsword.Content.NPCs
                 Main.NewText("之后还会更新更多，敬请期待！");
                 return;
             }
+            UCSSky.DrawColor = Color.OrangeRed;
             if (CurrentMode is TwoLevel)
             {
                 Music = Music2;
+                UCSSky.DrawColor = Color.DarkGreen with { A = 100 };
             }
             else if(CurrentMode is ThreeLevel)
             {
                 Music = Music3;
+                UCSSky.DrawColor = Color.LightGreen;
             }
-            if(DamagePool < DamagePoolMax)
-                DamagePool += 20;
+
+            SkyManager.Instance.Activate(nameof(UCSSky));
+            //if (SkyManager.Instance[nameof(UCSSky)].IsActive())//如果这个天空没激活
+            UCSSky.Timeleft = 20;
             if (DamagePool < 0)
-                DamagePool += -DamagePool / 3;
+            {
+                DamagePool += -DamagePool / 10;
+                DamagePool += 2;
+            }
+            else if (DamagePool < DamagePoolMax)
+                DamagePool += 15;
         }
         public override bool CheckActive() => false;
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
@@ -141,7 +154,7 @@ namespace UltimateCopperShortsword.Content.NPCs
         {
             base.ModifyIncomingHit(ref modifiers);
             if (DamagePool <= 100)
-                modifiers.FinalDamage *= 0.9f;
+                modifiers.FinalDamage *= 0.6f;
             modifiers.ModifyHitInfo += ModifyHitInfo;
         }
         public void ModifyHitInfo(ref NPC.HitInfo info)
@@ -149,7 +162,7 @@ namespace UltimateCopperShortsword.Content.NPCs
             DamagePool -= info.Damage;
             if (DamagePool <= 0)
             {
-                info.Damage = 1;
+                info.Damage = (int)MathF.Pow(info.Damage,0.5f);
             }
         }
 
@@ -226,17 +239,21 @@ namespace UltimateCopperShortsword.Content.NPCs
 
             MoveHeadAndShoot moveHeadAndShoot_phase3 = new(NPC);
             RoungTargetAndShoot roungTargetAndShoot_phase3 = new(NPC);
-            MoveSwingShoot moveSwingShoot1_phase3 = new(NPC, Vector2.UnitY, MathHelper.Pi, 0.3f, 2.5f, 10)
+            MoveSwingShoot moveSwingShoot1_phase3 = new(NPC, Vector2.UnitY, MathHelper.Pi, 0.3f, 2.2f, 10)
             {
                 rand = 50 // 一半几率触发
             };
-            MoveSwingShoot moveSwingShoot2_phase3 = new(NPC, -Vector2.UnitY, -MathHelper.Pi, 0.3f, 2.5f, 10)
+            MoveSwingShoot moveSwingShoot2_phase3 = new(NPC, -Vector2.UnitY, -MathHelper.Pi, 0.3f, 2.2f, 10)
             {
                 rand = 50 // 一半几率触发
             };
+            MoreSpurt moreSpurt = new(NPC);
             #endregion
-            SkillNPC.Register(Move_Three, swing1_phase3, swing2_phase3, swing3_phase3, swing4_phase3, chargedSlash, spurt1_phase3, spurt2_phase3, spurt3_phase3, moveHeadAndShoot_phase3, moveSwingShoot1_phase3);
+            SkillNPC.Register(Move_Three, swing1_phase3, swing2_phase3, swing3_phase3, swing4_phase3, chargedSlash, spurt1_phase3, spurt2_phase3, spurt3_phase3, 
+                moveHeadAndShoot_phase3, moveSwingShoot1_phase3,moveSwingShoot2_phase3, roungTargetAndShoot_phase3, moreSpurt);
 
+            Move_Three.AddSkill(moreSpurt);
+            moreSpurt.AddSkill(moreSpurt);
             spurt1_phase3.AddBySkilles(swing1_phase3, swing2_phase3, swing3_phase3, swing4_phase3, chargedSlash);
             Move_Three.AddSkill(spurt1_phase3).AddSkill(spurt2_phase3).AddSkill(spurt3_phase3);
             Move_Three.AddSkill(swing1_phase3).AddSkill(swing2_phase3).AddSkill(swing3_phase3).AddSkill(swing4_phase3).AddSkill(chargedSlash);

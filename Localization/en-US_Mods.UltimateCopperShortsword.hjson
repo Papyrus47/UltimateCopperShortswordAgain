@@ -1,4 +1,4 @@
-NPCs.CopperShortsword.DisplayName: Copper Shortsword
+NPCs.CopperShortsword.DisplayName: 最终铜短剑
 
 Content: {
 	NPCs: {
@@ -20,15 +20,15 @@ Content: {
 }
 
 Projectiles: {
-	SwingProj.DisplayName: Swing Proj
-	UCSProj1.DisplayName: U C S Proj1
-	StabProj.DisplayName: Stab Proj
-	UCSProj2.DisplayName: U C S Proj2
+	SwingProj.DisplayName: 最终铜短剑
+	UCSProj1.DisplayName: 最终铜短剑
+	StabProj.DisplayName: 最终铜短剑
+	UCSProj2.DisplayName: 最终铜短剑
 }
 
 Items: {
 	SummonUCS: {
-		DisplayName: Summon U C S
+		DisplayName: 最终铜短剑
 		Tooltip: ""
 	}
 }

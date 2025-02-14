@@ -46,9 +46,11 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
             }
             else 
             {
-                if (copperShortsword.DamagePool <= copperShortsword.DamagePool * -0.1f)
+                if (copperShortsword.DamagePool <= copperShortsword.DamagePool * -0.01f)
                 {
                     SkillTimeOut = true;
+                    if(Main.netMode != NetmodeID.Server)
+                        SoundEngine.PlaySound(SoundID.Item14 with { Pitch = -0.5f }, NPC.position);
                     return;
                 }
                 float dis = NPC.Distance(Target.position);
@@ -57,7 +59,7 @@ namespace UltimateCopperShortsword.Content.NPCs.Skills
                 else
                     NPC.velocity *= 0.8f;
                 NPC.rotation = NPC.velocity.ToRotation() + MathHelper.PiOver4;
-                if((int)NPC.ai[0] == 2)
+                if((int)NPC.ai[0] == 2 && Main.netMode != NetmodeID.Server)
                 {
                     SoundEngine.PlaySound(SoundID.Item28 with { Pitch = -0.5f }, NPC.position);
                     Color color = Color.OrangeRed;
